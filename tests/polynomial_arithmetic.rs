@@ -1,4 +1,8 @@
+use algebra::polynomial::lagrange::lagrange_interpolation;
 use algebra::{field::finite_field::Fp, polynomial::Polynomial};
+use common::MyF64;
+
+mod common;
 
 #[test]
 fn test_polynomial_subtraction_smaller_minus_larger() {
@@ -16,7 +20,7 @@ fn test_polynomial_subtraction_smaller_minus_larger() {
 
     assert_eq!(
         result,
-        Polynomial::from_coeffs(vec![F17::new(15), F17::new(16), F17::new(16)])
+        Polynomial::from_coeffs(vec![F17::new(16), F17::new(16), F17::new(15)])
     );
 }
 
@@ -33,6 +37,32 @@ fn test_polynomial_subtraction_larger_minus_smaller() {
     let result = &p1 - &p2;
     assert_eq!(
         result,
-        Polynomial::from_coeffs(vec![F17::new(2), F17::new(1), F17::new(1)])
+        Polynomial::from_coeffs(vec![F17::new(1), F17::new(1), F17::new(2)])
     );
+}
+
+#[test]
+fn test_mixed_ops_custom_type() {
+    let p1 = lagrange_interpolation(&vec![(MyF64(0.0), MyF64(1.0)), (MyF64(1.0), MyF64(2.0))]);
+    let p2 = p1.clone();
+
+    // Owned + Owned
+    let _ = p1.clone() + p2.clone();
+    // Ref + Ref
+    let _ = &p1 + &p2;
+    // Owned + Ref
+    let _ = p1.clone() + &p2;
+    // Ref + Owned
+    let _ = &p1 + p2.clone();
+
+    // Scalar ops
+    let s = MyF64(2.0);
+    // Add scalar
+    let _ = p1.clone() + s;
+    // Sub scalar
+    let _ = p1.clone() - s;
+    // Mul scalar
+    let _ = p1.clone() * s;
+    // Div scalar
+    let _ = p1.clone() / s;
 }

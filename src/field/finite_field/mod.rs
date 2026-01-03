@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
 use crate::{field::FieldBase, ring::RingBase};
@@ -56,6 +56,17 @@ impl<const P: u64> Mul for Fp<P> {
         // Cast to u128 to avoid overflow
         let prod = (self.0 as u128) * (other.0 as u128);
         Fp((prod % P as u128) as u64)
+    }
+}
+
+impl<const P: u64> Neg for Fp<P> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        match self {
+            Fp(0) => Fp(0),
+            Fp(n) => Fp(P - n),
+        }
     }
 }
 
